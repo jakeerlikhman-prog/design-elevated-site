@@ -5,9 +5,7 @@ const partners = [
   "Fernbrook Homes",
   "Fieldgate Homes",
   "Princess Margaret Homes",
-  "Great Gulf",
-  "Tridel",
-  "Daniels Corporation",
+  "Greenpark Group",
 ];
 
 const TrustBar = () => {
