@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Send } from "lucide-react";
+import { useForm, ValidationError } from "@formspree/react";
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -10,12 +11,7 @@ const budgetOptions = ["Under $5,000", "$5,000 – $15,000", "$15,000 – $30,00
 const ContactSection = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
+  const [state, handleSubmit] = useForm("xbdpwrvq");
 
   return (
     <section id="contact" className="py-24 md:py-32">
@@ -35,7 +31,7 @@ const ContactSection = () => {
             </p>
           </div>
 
-          {submitted ? (
+          {state.succeeded ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -52,29 +48,37 @@ const ContactSection = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <input
                   type="text"
+                  name="firstName"
                   placeholder="First Name"
                   required
                   className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow"
                 />
                 <input
                   type="text"
+                  name="lastName"
                   placeholder="Last Name"
                   required
                   className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow"
                 />
               </div>
-              <input
-                type="email"
-                placeholder="Email Address"
-                required
-                className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow"
-              />
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  required
+                  className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow"
+                />
+                <ValidationError field="email" errors={state.errors} className="text-red-500 text-xs mt-1" />
+              </div>
               <input
                 type="tel"
+                name="phone"
                 placeholder="Phone Number"
                 className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow"
               />
               <select
+                name="service"
                 required
                 defaultValue=""
                 className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow appearance-none"
@@ -85,6 +89,7 @@ const ContactSection = () => {
                 ))}
               </select>
               <select
+                name="budget"
                 required
                 defaultValue=""
                 className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow appearance-none"
@@ -94,16 +99,22 @@ const ContactSection = () => {
                   <option key={b} value={b}>{b}</option>
                 ))}
               </select>
-              <textarea
-                placeholder="Tell us about your project…"
-                rows={4}
-                className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow resize-none"
-              />
+              <div>
+                <textarea
+                  name="message"
+                  placeholder="Tell us about your project…"
+                  rows={4}
+                  className="w-full px-4 py-3 bg-secondary border border-border rounded-sm text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow resize-none"
+                />
+                <ValidationError field="message" errors={state.errors} className="text-red-500 text-xs mt-1" />
+              </div>
+              <ValidationError errors={state.errors} className="text-red-500 text-sm text-center" />
               <button
                 type="submit"
-                className="w-full py-3.5 bg-primary text-primary-foreground font-medium text-sm rounded-sm hover:bg-charcoal-light transition-colors duration-200 active:scale-[0.98]"
+                disabled={state.submitting}
+                className="w-full py-3.5 bg-primary text-primary-foreground font-medium text-sm rounded-sm hover:bg-charcoal-light transition-colors duration-200 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Send Request
+                {state.submitting ? "Sending…" : "Send Request"}
               </button>
             </form>
           )}
